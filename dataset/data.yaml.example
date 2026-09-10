@@ -1,0 +1,18 @@
+# Rename this file to data.yaml and update the paths.
+# YOLO labels use one .txt per image: class_id x_center y_center width height
+# with normalized coordinates [0,1].
+path: /ABSOLUTE/PATH/TO/YOUR/DATASET
+train: images/train
+val: images/val
+
+names:
+  0: person
+  1: helmet
+  2: no_helmet
+  3: safety_vest
+  4: no_vest
+  5: fallen_person
+  6: smoke
+  7: fire
+  8: obstacle
+  9: blocked_exit
