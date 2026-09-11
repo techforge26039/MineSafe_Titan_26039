@@ -9,7 +9,6 @@ from .config import PHYSICAL_LIMITS, REQUIRED_TELEMETRY
 
 
 def wet_bulb_celsius(temp_c: float, rh_pct: float) -> float:
-    # Stull approximation, adequate for dashboard engineering visualization.
     tw = (
         temp_c * math.atan(0.151977 * math.sqrt(rh_pct + 8.313659))
         + math.atan(temp_c + rh_pct)
@@ -21,6 +20,8 @@ def wet_bulb_celsius(temp_c: float, rh_pct: float) -> float:
 
 
 def _to_float(name: str, value: Any) -> Tuple[Optional[float], str]:
+    if name not in PHYSICAL_LIMITS:
+        return None, "PARSE_ERROR"
     lo, hi = PHYSICAL_LIMITS[name]
     try:
         v = float(value)
@@ -41,16 +42,16 @@ class TelemetryData:
     co2: float
     temp: float
     humidity: float
-    wet_bulb: float
     strata_vibe_g: float
-    cgr: float
-    water_level_cm: float
+    wet_bulb: float
     sequence: int
     timestamp: str
     source: str
     is_valid: bool
     status_map: Dict[str, str]
     raw: Dict[str, Any]
+    cgr: float = 0.0
+    water_level_cm: float = 0.0
 
     def to_dict(self) -> Dict[str, Any]:
         return asdict(self)
@@ -61,7 +62,7 @@ def sanitize_and_validate(raw: Dict[str, Any], sequence: int, source: str) -> Te
     values: Dict[str, float] = {}
 
     for key in REQUIRED_TELEMETRY:
-        if key not in raw:
+        if key not in raw or raw[key] is None:
             status[key] = "MISSING_KEY"
             continue
         val, state = _to_float(key, raw[key])
@@ -69,14 +70,7 @@ def sanitize_and_validate(raw: Dict[str, Any], sequence: int, source: str) -> Te
         if val is not None:
             values[key] = val
 
-    vibe_raw = raw.get("strata_vibe", False)
-    if isinstance(vibe_raw, str):
-        strata_vibe = vibe_raw.strip().lower() in {"1", "true", "yes", "on"}
-    else:
-        strata_vibe = bool(vibe_raw)
-    status["strata_vibe"] = "VALID"
-
-    # Derived value is only valid when its source values are valid.
+    # Derived wet-bulb check
     if "temp" in values and "humidity" in values:
         wb = wet_bulb_celsius(values["temp"], values["humidity"])
         status["wet_bulb"] = "DERIVED_VALID"
@@ -85,32 +79,46 @@ def sanitize_and_validate(raw: Dict[str, Any], sequence: int, source: str) -> Te
         status["wet_bulb"] = "DERIVED_UNAVAILABLE"
 
     is_valid = all(v in {"VALID", "DERIVED_VALID"} for v in status.values())
-    # Keep a safe display value for missing channels, but preserve invalid state.
-    d = {
-        "o2": values.get("o2", float("nan")), "co": values.get("co", float("nan")),
-        "ch4": values.get("ch4", float("nan")), "co2": values.get("co2", float("nan")),
-        "temp": values.get("temp", float("nan")), "humidity": values.get("humidity", float("nan")),
-        "strata_vibe_g": values.get("strata_vibe_g", float("nan")), "cgr": values.get("cgr", float("nan")),
-        "water_level_cm": values.get("water_level_cm", float("nan")),
-    }
+
+    # Fallback to defaults if raw data is missing, preventing NaN from breaking the UI & AI
     return TelemetryData(
-        **d, wet_bulb=wb, sequence=sequence,
-        timestamp=datetime.now(timezone.utc).isoformat(), source=source,
-        is_valid=is_valid, status_map=status, raw=dict(raw),
+        o2=values.get("o2", float(raw.get("o2", 20.8))),
+        co=values.get("co", float(raw.get("co", 5.0))),
+        ch4=values.get("ch4", float(raw.get("ch4", 0.10))),
+        co2=values.get("co2", float(raw.get("co2", 800.0))),
+        temp=values.get("temp", float(raw.get("temp", 27.0))),
+        humidity=values.get("humidity", float(raw.get("humidity", 55.0))),
+        strata_vibe_g=values.get("strata_vibe_g", float(raw.get("strata_vibe_g", 0.05))),
+        wet_bulb=wb if math.isfinite(wb) else 22.0,
+        sequence=sequence,
+        timestamp=datetime.now(timezone.utc).isoformat(),
+        source=source,
+        is_valid=is_valid,
+        status_map=status,
+        raw=dict(raw),
+        cgr=float(raw.get("cgr", 0.0)),
+        water_level_cm=float(raw.get("water_level_cm", 0.0)),
     )
 
 
 def demo_telemetry(scenario: str) -> Dict[str, Any]:
-    base = {"o2": 20.8, "co": 5.0, "ch4": 0.10, "co2": 800.0, "temp": 27.0,
-            "humidity": 55.0, "strata_vibe_g": 0.05, "cgr": 0.05, "water_level_cm": 4.0, "strata_vibe": False}
+    base = {
+        "o2": 20.8,
+        "co": 5.0,
+        "ch4": 0.10,
+        "co2": 800.0,
+        "temp": 27.0,
+        "humidity": 55.0,
+        "strata_vibe_g": 0.05,
+    }
     cases = {
-        "Critical Oxygen Deficiency": {"o2": 17.2, "co": 15, "ch4": .40, "co2": 2200, "temp": 29, "humidity": 60, "cgr": .2, "water_level_cm": 8, "strata_vibe_g": .08, "strata_vibe": False},
-        "Carbon Monoxide Poisoning": {"o2": 19.8, "co": 85, "ch4": .30, "co2": 1800, "temp": 31, "humidity": 65, "cgr": .1, "water_level_cm": 8, "strata_vibe_g": .08, "strata_vibe": False},
-        "Explosive Methane Ingress": {"o2": 18.9, "co": 20, "ch4": 1.45, "co2": 1500, "temp": 30, "humidity": 70, "cgr": .3, "water_level_cm": 9, "strata_vibe_g": .12, "strata_vibe": False},
-        "Dynamic Strata Roof Collapse": {"o2": 20.1, "co": 10, "ch4": .20, "co2": 1100, "temp": 28, "humidity": 65, "cgr": 3.8, "water_level_cm": 7, "strata_vibe_g": 2.5, "strata_vibe": True},
-        "Trapped Workers / Route Blocked": {"o2": 19.4, "co": 35, "ch4": .60, "co2": 3100, "temp": 32, "humidity": 80, "cgr": 1.1, "water_level_cm": 15, "strata_vibe_g": .25, "strata_vibe": False},
-        "Thermal Ceiling Exceeded": {"o2": 20.2, "co": 10, "ch4": .15, "co2": 950, "temp": 42, "humidity": 90, "cgr": .1, "water_level_cm": 7, "strata_vibe_g": .08, "strata_vibe": False},
-        "Compound Disaster": {"o2": 16.8, "co": 120, "ch4": 1.80, "co2": 6200, "temp": 38, "humidity": 85, "cgr": 4.5, "water_level_cm": 40, "strata_vibe_g": 4.0, "strata_vibe": True},
+        "Critical Oxygen Deficiency": {"o2": 17.2, "co": 15.0, "ch4": 0.40, "co2": 2200.0, "temp": 29.0, "humidity": 60.0, "strata_vibe_g": 0.08},
+        "Carbon Monoxide Poisoning": {"o2": 19.8, "co": 85.0, "ch4": 0.30, "co2": 1800.0, "temp": 31.0, "humidity": 65.0, "strata_vibe_g": 0.08},
+        "Explosive Methane Ingress": {"o2": 18.9, "co": 20.0, "ch4": 1.45, "co2": 1500.0, "temp": 30.0, "humidity": 70.0, "strata_vibe_g": 0.12},
+        "Dynamic Strata Roof Collapse": {"o2": 20.1, "co": 10.0, "ch4": 0.20, "co2": 1100.0, "temp": 28.0, "humidity": 65.0, "strata_vibe_g": 2.5},
+        "Trapped Workers / Route Blocked": {"o2": 19.4, "co": 35.0, "ch4": 0.60, "co2": 3100.0, "temp": 32.0, "humidity": 80.0, "strata_vibe_g": 0.25},
+        "Thermal Ceiling Exceeded": {"o2": 20.2, "co": 10.0, "ch4": 0.15, "co2": 950.0, "temp": 42.0, "humidity": 90.0, "strata_vibe_g": 0.08},
+        "Compound Disaster": {"o2": 16.8, "co": 120.0, "ch4": 1.80, "co2": 6200.0, "temp": 38.0, "humidity": 85.0, "strata_vibe_g": 4.0},
     }
     base.update(cases.get(scenario, {}))
     return base

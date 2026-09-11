@@ -12,7 +12,7 @@ REGULATORY_BOUNDS = {
     "wet_bulb": {"action_threshold": 30.5, "ceiling_limit": 33.5, "unit": "°C"},
 }
 
-# Engineering plausibility bounds. Out-of-range data is REJECTED, never silently clamped.
+# Plausibility bounds for active hardware telemetry channels
 PHYSICAL_LIMITS = {
     "o2": (0.0, 30.0),
     "co": (0.0, 2000.0),
@@ -21,15 +21,12 @@ PHYSICAL_LIMITS = {
     "temp": (-20.0, 80.0),
     "humidity": (0.0, 100.0),
     "strata_vibe_g": (0.0, 20.0),
-    "cgr": (0.0, 20.0),
-    "water_level_cm": (0.0, 10000.0),
 }
 
 REQUIRED_TELEMETRY = list(PHYSICAL_LIMITS)
 DEFAULT_GATEWAY = "http://192.168.137.89"
 REQUEST_TIMEOUT = 1.5
 
-# Coal mine geometry aligned from BASE to ZONE_A with bypass shafts and crosscuts.
 MINE_GRAPH = {
     "BASE": {"ZONE_A": 45, "SHAFT_NORTH": 35, "SHAFT_SOUTH": 50},
     "SHAFT_NORTH": {"BASE": 35, "ZONE_A": 25, "AUX_BYPASS": 30},

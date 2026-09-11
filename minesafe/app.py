@@ -63,8 +63,17 @@ section[data-testid="stSidebar"]{background:#06100c;border-right:1px solid #1733
 .bar{height:4px;background:#14281f;border-radius:4px;overflow:hidden;margin:5px 0}.fill{height:100%;background:var(--amber)}
 
 /* UNIFIED CAMERA CONTAINER */
-.cam-container{border:1px solid #1e3d30;border-radius:9px;background:#07120e;overflow:hidden;margin:4px 0 16px}
-.cam-header{background:#0a1813;padding:6px 14px;border-bottom:1px solid #1e3d30;display:flex;justify-content:space-between;align-items:center;min-height:50px}
+.cam-container{
+    border-left: 1px solid #1e3d30;
+    border-right: 1px solid #1e3d30;
+    border-bottom: 1px solid #1e3d30;
+    border-top: none !important;
+    border-radius: 0 0 9px 9px;
+    background: #07120e;
+    overflow: hidden;
+    margin: 0 0 16px;
+}
+.cam-header{background:#0a1813;padding:6px 14px;border-bottom:none !important;display:flex;justify-content:space-between;align-items:center;min-height:50px}
 .cam-badge{font-size:9px;padding:3px 9px;border-radius:12px;letter-spacing:0.8px;font-weight:600}
 .cam-badge-red{background:#2b0d0d;color:var(--red);border:1px solid #822424}
 .cam-badge-green{background:#072417;color:var(--green);border:1px solid #1e5a3c}
@@ -89,25 +98,25 @@ div[data-testid="stColumn"] button[key*="btn_cam"]:hover {
 
 /* CAMERA VIEWPORTS */
 .nv-viewport{
-    height:380px;
-    background:radial-gradient(ellipse at center,#092318 0%,#05110c 65%,#020604 100%);
+    height:280px;
+    background:radial-gradient(ellipse at center,#05140d 0%,#020906 60%,#000302 100%);
     position:relative;
     display:flex;
     align-items:center;
     justify-content:center;
-    border-bottom:1px solid #11281f;
+    border-bottom:1px solid #0d1e16;
 }
 .th-viewport{
-    height:380px;
-    background:radial-gradient(circle at 45% 50%,#ffe600 0%,#ff8c00 18%,#d11a2a 42%,#6a0d6d 72%,#1a0826 100%);
+    height:280px;
+    background:radial-gradient(circle at 45% 50%,#52183b 0%,#300f2e 28%,#190924 55%,#0d0617 80%,#05020a 100%);
     position:relative;
     display:flex;
     align-items:center;
     justify-content:center;
-    border-bottom:1px solid #361726;
+    border-bottom:1px solid #241126;
 }
 .normal-viewport{
-    height:380px;
+    height:280px;
     background:radial-gradient(ellipse at 50% 50%,#183329 0%,#0c1b15 50%,#040a08 100%);
     position:relative;
     display:flex;
@@ -115,11 +124,11 @@ div[data-testid="stColumn"] button[key*="btn_cam"]:hover {
     justify-content:center;
     border-bottom:1px solid #1a3c2e;
 }
-.cam-crosshair{position:absolute;top:50%;left:50%;width:48px;height:48px;transform:translate(-50%,-50%);border:1px dashed rgba(255,255,255,0.28);border-radius:50%}
+.cam-crosshair{position:absolute;top:50%;left:50%;width:44px;height:44px;transform:translate(-50%,-50%);border:1px dashed rgba(255,255,255,0.28);border-radius:50%}
 .cam-watermark{font-size:12px;color:rgba(255,255,255,0.85);background:rgba(0,0,0,0.58);padding:6px 14px;border-radius:4px;letter-spacing:1px;font-family:'IBM Plex Mono',monospace}
 .cam-footer{padding:8px 14px;font-size:10px;color:var(--muted);display:flex;justify-content:space-between;background:#050c09}
 
-/* CHECKLIST CONTAINER: SIMPLE GREY BY DEFAULT, RED ON CRITICAL HAZARDS */
+/* CHECKLIST CONTAINER */
 .checklist-default {
     background: #081410;
     border: 1px solid #1d3a2e;
@@ -167,7 +176,6 @@ div[data-testid="stCheckbox"] label p {
     color: #e9f2ed;
 }
 
-/* REMOVE RED BORDERS FROM ALL BASEWEB CONTROLS */
 div[data-baseweb="select"], div[data-baseweb="select"] * {
     border-color: #1d3a2e !important;
     outline: none !important;
@@ -197,7 +205,6 @@ div[data-baseweb="input"]:focus-within > div {
     box-shadow: none !important;
 }
 
-/* SIDEBAR DYNAMIC FOCUS STYLES */
 .sidebar-active-title { color: #ffffff !important; font-weight: 700; font-size: 11px; letter-spacing: 1px; margin-bottom: 4px; }
 .sidebar-inactive-title { color: #668075 !important; font-weight: 600; font-size: 11px; letter-spacing: 1px; margin-bottom: 4px; }
 .active-ctrl { opacity: 1.0 !important; transition: opacity 0.2s ease; }
@@ -225,7 +232,6 @@ for i in range(1, 10):
 with st.sidebar:
     st.markdown('<div class="brand"><h1>MINESAFE TITAN MODE</h1><small>SIH 2026 - PS 26039</small></div>', unsafe_allow_html=True)
     
-    # Defaults to index 1 (SIMULATION LAB) on initial load or refresh
     source = st.radio('Telemetry', ['LIVE ESP32 GATEWAY', 'SIMULATION LAB'], index=1, label_visibility='collapsed')
     is_live = source.startswith('LIVE')
 
@@ -238,28 +244,22 @@ with st.sidebar:
     sim_css = "active-ctrl" if not is_live else "inactive-ctrl"
     st.markdown(f'<div class="{"sidebar-active-title" if not is_live else "sidebar-inactive-title"}">SIMULATION LAB // INCIDENT INJECTION</div>', unsafe_allow_html=True)
     st.markdown(f'<div class="{sim_css}">', unsafe_allow_html=True)
+    
     scenario = st.selectbox(
         'Scenario',
-        ['Nominal Operations','Custom Manual Simulation','Critical Oxygen Deficiency','Carbon Monoxide Poisoning','Explosive Methane Ingress','Dynamic Strata Roof Collapse','Trapped Workers / Route Blocked','Thermal Ceiling Exceeded','Compound Disaster'],
+        [
+            'Nominal Operations',
+            'Carbon Monoxide Poisoning',
+            'Explosive Methane Ingress',
+            'Dynamic Strata Roof Collapse',
+            'Thermal Ceiling Exceeded',
+            'Compound Disaster'
+        ],
         label_visibility='collapsed',
         disabled=is_live
     )
     
-    route_blocked = (scenario in {'Trapped Workers / Route Blocked', 'Compound Disaster', 'Dynamic Strata Roof Collapse'}) if not is_live else False
-
-    if scenario == 'Custom Manual Simulation' and not is_live:
-        st.markdown('**ATMOSPHERIC CONTROLS**')
-        manual_o2 = st.slider('Oxygen O₂ (%)', 0.0, 30.0, 20.4, 0.1)
-        manual_co = st.slider('Carbon Monoxide CO (PPM)', 0.0, 2000.0, 12.0, 1.0)
-        manual_ch4 = st.slider('Methane CH₄ (%)', 0.0, 5.0, 0.20, 0.01)
-        manual_co2 = st.slider('Carbon Dioxide CO₂ (PPM)', 0.0, 10000.0, 900.0, 50.0)
-        manual_temp = st.slider('Temperature (°C)', -10.0, 60.0, 29.0, 0.5)
-        manual_humidity = st.slider('Humidity (%)', 0.0, 100.0, 65.0, 1.0)
-        manual_vibe = st.slider('Strata vibration (g)', 0.0, 10.0, 0.10, 0.05)
-        manual_cgr = st.slider('Crack growth (mm/min)', 0.0, 10.0, 0.10, 0.05)
-        manual_water = st.slider('Water level (cm)', 0.0, 1000.0, 5.0, 1.0)
-    else:
-        manual_o2, manual_co, manual_ch4, manual_co2, manual_temp, manual_humidity, manual_vibe, manual_cgr, manual_water = (None,) * 9
+    route_blocked = (scenario in {'Compound Disaster', 'Dynamic Strata Roof Collapse'}) if not is_live else False
 
     hazard_node = st.selectbox('Hazard location', ['BASE', 'ZONE_A'], index=1, disabled=is_live)
     st.markdown('</div>', unsafe_allow_html=True)
@@ -303,15 +303,7 @@ if is_live:
     else:
         link_failed = False
 else:
-    if scenario == 'Custom Manual Simulation':
-        custom_raw = {
-            'o2': manual_o2, 'co': manual_co, 'ch4': manual_ch4, 'co2': manual_co2,
-            'temp': manual_temp, 'humidity': manual_humidity, 'strata_vibe_g': manual_vibe,
-            'cgr': manual_cgr, 'water_level_cm': manual_water, 'strata_vibe': manual_vibe >= 2.0
-        }
-        telemetry = sanitize_and_validate(custom_raw, seq, 'SIMULATED · MANUAL')
-    else:
-        telemetry = sanitize_and_validate(demo_telemetry(scenario), seq, 'SIMULATED · SCENARIO')
+    telemetry = sanitize_and_validate(demo_telemetry(scenario), seq, 'SIMULATED · SCENARIO')
     gw = type('GW', (), {'online': False, 'message': 'SIMULATION LAB ACTIVE'})()
 
 # Computer Vision Inference
@@ -370,7 +362,7 @@ vision_priority = vision_result.vision_score if vision_result else 0
 overall = max(score, max_trpi, vision_priority)
 priority = 'IMMEDIATE' if overall >= 80 else 'URGENT' if overall >= 60 else 'MONITOR'
 
-# Top Header Pill Badges: Explicit Mode & Connection Checking
+# Top Header Pill Badges
 hardware_connected = is_live and (not link_failed) and getattr(gw, 'online', False)
 
 if is_live:
@@ -414,10 +406,20 @@ if score >= 60 or breaches:
     st.markdown(f'<div class="alertbar"><div><div class="big">⚠ INCIDENT // {risk}</div><div class="mini">{detail} · response priority {priority}</div></div><div class="mini">SEQ {seq:06d}<br>{datetime.now():%H:%M:%S} LOCAL</div></div>', unsafe_allow_html=True)
 
 # Top KPI Summary Cards
+if ai_prob >= 60.0:
+    ai_status_label = 'ANOMALOUS'
+    ai_status_color = 'red'
+elif ai_prob >= 35.0:
+    ai_status_label = 'DEVIATION DETECTED'
+    ai_status_color = 'amber'
+else:
+    ai_status_label = 'NOMINAL PATTERN'
+    ai_status_color = 'green'
+
 k = st.columns(5, gap='medium')
 kpis = [
     ('MINE RISK', f'{score}/100', 'red' if score >= 60 else 'amber' if score >= 35 else 'green', 'LOW' if score < 35 else risk),
-    ('AI ANOMALY', f'{ai_prob:.1f}%', 'amber', 'UNCERTAIN'),
+    ('AI ANOMALY', f'{ai_prob:.1f}%', ai_status_color, ai_status_label),
     ('VISION', f'{vision_result.vision_score:.0f}/100' if vision_result else 'STANDBY', 'red' if vision_result and vision_result.vision_score >= 70 else 'amber' if vision_result and vision_result.vision_score else 'cyan', 'COMPUTER VISION'),
     ('WORKERS', str(len(workers)), 'green' if workers and workers[0].source == 'LIVE' else 'cyan', 'WEARABLE CHANNEL'),
     ('TRPI MAX', f'{max_trpi:.1f}/100', 'red' if max_trpi >= 60 else 'amber' if max_trpi >= 35 else 'green', 'WORKER TRIAGE')
@@ -433,10 +435,10 @@ if worker_link_failed:
 
 curr_dt = datetime.now()
 curr_pressure = round(101.3 + (telemetry.temp - 25.0) * 0.08 - (telemetry.humidity - 50.0) * 0.03, 1) if telemetry.is_valid else 101.3
-curr_moisture = round(min(100.0, telemetry.humidity * 0.88 + telemetry.water_level_cm * 0.45), 1) if telemetry.is_valid else 50.0
+curr_moisture = round(min(100.0, telemetry.humidity * 0.88), 1) if telemetry.is_valid else 50.0
 
 # Tabs
-tab2, tab3, tab4, tab5, tab6 = st.tabs(['◉ ENVIRONMENT', '♙ PERSONNEL & RESCUE', '⌁ AI / DATA', '▣ AUDIT & STANDARDS', '📜 STATUTORY STANDARDS & METHODS'])
+tab2, tab3, tab4, tab5, tab6 = st.tabs(['◉ ENVIRONMENT', '♙ PERSONNEL & RESCUE', '◈ AI / DATA', '▣ AUDIT & STANDARDS', '📜 STATUTORY STANDARDS & METHODS'])
 
 with tab2:
     st.markdown('<div class="section">ENVIRONMENTAL MONITORING</div>', unsafe_allow_html=True)
@@ -461,9 +463,9 @@ with tab2:
         </div>
         ''', unsafe_allow_html=True)
     
-    # Camera Stream / Viewport Container
-    st.markdown('<div class="section">MINE VISION MONITORING</div>', unsafe_allow_html=True)
-    vision_left_col, vision_right_space = st.columns([1.45, 0.55], gap='large')
+    # Camera Stream / Viewport Container + Relocated Rover Teleoperation
+    st.markdown('<div class="section" style="border-bottom:1px solid #1e3d30;padding-bottom:6px">MINE VISION MONITORING</div>', unsafe_allow_html=True)
+    vision_left_col, vision_right_space = st.columns([1.35, 0.65], gap='medium')
 
     with vision_left_col:
         cam_badge_cls = "cam-badge-green" if hardware_connected else "cam-badge-red"
@@ -492,7 +494,7 @@ with tab2:
             </div>
             <div class="cam-footer">
                 <span>TUNNEL_HEAD_EAST · LWIR 8-14µm</span>
-                <span>PALETTE: IRONBOW / PURPLE-FIRE · RESOLUTION: 1080p</span>
+                <span>NETD < 50mK · GAIN: HIGH FLIR RADIOMETRIC · RESOLUTION: 1080p</span>
             </div>
             ''', unsafe_allow_html=True)
         elif cam_mode == "Night Vision":
@@ -502,14 +504,14 @@ with tab2:
                 <div class="cam-watermark">LIVE NIGHT VISION</div>
             </div>
             <div class="cam-footer">
-                <span>TUNNEL_HEAD_EAST · IR 850nm</span>
-                <span>FPS: 30 · RESOLUTION: 1080p</span>
+                <span>TUNNEL_HEAD_EAST · IR 850nm ILLUMINATOR ACTIVE</span>
+                <span>LOW-LIGHT ENHANCED · FPS: 30 · RESOLUTION: 1080p</span>
             </div>
             ''', unsafe_allow_html=True)
         else:
             if hardware_connected:
                 st.markdown(f'''
-                <div style="height:380px;background:#000;display:flex;justify-content:center;align-items:center;overflow:hidden;position:relative;">
+                <div style="height:280px;background:#000;display:flex;justify-content:center;align-items:center;overflow:hidden;position:relative;">
                     <img src="{gateway_url}:81/stream" style="width:100%;height:100%;object-fit:cover;" onerror="this.style.display='none'"/>
                     <div class="cam-crosshair"></div>
                     <div class="cam-watermark" style="position:absolute;bottom:12px;left:12px;">LIVE HARDWARE STREAM</div>
@@ -533,54 +535,9 @@ with tab2:
 
         st.markdown('</div>', unsafe_allow_html=True)
 
-    st.markdown('<div class="section">RISK COMPONENTS</div>', unsafe_allow_html=True)
-    st.plotly_chart(go.Figure(go.Bar(x=list(scores.values()), y=list(scores.keys()), orientation='h', text=[f'{v:.0f}' for v in scores.values()], textposition='outside')).update_layout(height=260, margin=dict(l=0, r=40, t=5, b=5), paper_bgcolor='#0b1713', plot_bgcolor='#0b1713', font=dict(color='#dcebe4'), xaxis=dict(range=[0, 110])), use_container_width=True, config={'displayModeBar': False})
-    st.markdown('<div class="panel"><div class="paneltitle">THRESHOLD BREACHES</div>' + (''.join(f'<div class="reading"><b>{b}</b><span class="red">BREACH</span></div>' for b in breaches) if breaches else '<div class="mini">No configured threshold breaches.</div>') + '</div>', unsafe_allow_html=True)
-
-with tab3:
-    st.markdown('<div class="section">PERSONNEL & RESCUE</div>', unsafe_allow_html=True)
-    for row in [trpis[i:i+3] for i in range(0, len(trpis), 3)]:
-        for col, (w, tv, parts) in zip(st.columns(len(row)), row):
-            col.markdown(f'''
-            <div class="worker">
-                <div class="tagline"><b>{w.tag} · {w.name}</b></div>
-                <div class="hr">{w.hr_bpm:.0f} <span style="font-size:9px;color:#769188">BPM</span></div>
-                <div class="mini">SpO₂ {w.spo2_pct:.0f}% · Temp {w.temp_c:.1f}°C · Fall {"YES" if w.fall_detected else "NO"}</div>
-                <div class="bar"><div class="fill" style="width:{min(100, tv)}%"></div></div>
-                <div style="display:flex;justify-content:space-between">
-                    <span class="mini">TRPI</span>
-                    <b class="{"red" if tv >= 80 else "amber" if tv >= 60 else "green"}">{tv:.1f}/100</b>
-                </div>
-            </div>
-            ''', unsafe_allow_html=True)
-
-    st.markdown('<div class="section">COAL MINE MAP</div>', unsafe_allow_html=True)
-    rescue_map_col, rescue_ctrl_col = st.columns([1.55, 0.95], gap='large')
-
-    with rescue_map_col:
-        tunnel_coords = {"BASE": (1.0, 5.0), "ZONE_A": (8.5, 5.0)}
-        worker_node_positions = [(3.0, 5.0), (6.2, 5.0), (7.5, 5.0)]
-
-        fig_rescue = go.Figure()
-        fig_rescue.add_trace(go.Scatter(x=[tunnel_coords["BASE"][0], tunnel_coords["ZONE_A"][0]], y=[tunnel_coords["BASE"][1], tunnel_coords["ZONE_A"][1]], mode='lines', line=dict(width=28, color='#143026'), hoverinfo='skip', showlegend=False))
-        fig_rescue.add_trace(go.Scatter(x=[tunnel_coords["BASE"][0], tunnel_coords["ZONE_A"][0]], y=[tunnel_coords["BASE"][1], tunnel_coords["ZONE_A"][1]], mode='lines', line=dict(width=1.5, color='#2a6b52', dash='dash'), hoverinfo='skip', showlegend=False))
-        fig_rescue.add_trace(go.Scatter(x=[tunnel_coords["BASE"][0]], y=[tunnel_coords["BASE"][1]], mode='markers+text', text=['BASE'], textposition='bottom center', textfont=dict(size=10, family='IBM Plex Mono', color='#39d98a'), marker=dict(size=22, color='#39d98a', symbol='square'), name='BASE'))
-        fig_rescue.add_trace(go.Scatter(x=[tunnel_coords["ZONE_A"][0]], y=[tunnel_coords["ZONE_A"][1]], mode='markers+text', text=['ZONE A'], textposition='bottom center', textfont=dict(size=10, family='IBM Plex Mono', color='#f4b942'), marker=dict(size=22, color='#f4b942', symbol='circle'), name='ZONE A'))
-
-        rover_color = '#39d98a' if st.session_state.rover_active else '#56d6e8'
-        fig_rescue.add_trace(go.Scatter(x=[4.6], y=[5.0], mode='markers+text', text=[f'ROVER M-01<br>({"ACTIVE" if st.session_state.rover_active else "IDLE"})'], textposition='top center', textfont=dict(size=9, family='IBM Plex Mono', color=rover_color), marker=dict(size=18, color=rover_color, symbol='diamond'), name='ROVER M-01'))
-
-        for i, (w, tv, _) in enumerate(trpis[:3]):
-            wx, wy = worker_node_positions[i]
-            w_color = '#ff5c5c' if tv >= 60 else '#f4b942' if tv >= 35 else '#39d98a'
-            fig_rescue.add_trace(go.Scatter(x=[wx], y=[wy], mode='markers+text', text=[f'{w.tag}<br>{w.name}'], textposition='bottom center', textfont=dict(size=8.5, family='IBM Plex Mono', color='#dcebe4'), marker=dict(size=13, color=w_color, symbol='circle'), name=w.tag))
-
-        fig_rescue.update_layout(height=320, margin=dict(l=10, r=10, t=15, b=10), paper_bgcolor='#07100d', plot_bgcolor='#07100d', xaxis=dict(visible=False, range=[0, 9.5]), yaxis=dict(visible=False, range=[3.5, 6.5]), font=dict(color='#dcebe4', family='IBM Plex Mono'), showlegend=False)
-        st.plotly_chart(fig_rescue, use_container_width=True, config={'displayModeBar': False})
-
-    with rescue_ctrl_col:
+    with vision_right_space:
         st.markdown(f'''
-        <div class="panel">
+        <div class="panel" style="margin-top:0px;margin-bottom:12px;border-top:none !important;border-radius:0 0 9px 9px;">
             <div class="paneltitle">ROVER M-01 TELEOPERATION</div>
             <div class="mini" style="line-height:1.7;margin-top:4px">
                 Status: <b class="{'green' if st.session_state.rover_active else 'amber'}">{'ACTIVE / MOVING' if st.session_state.rover_active else 'STANDBY / HOLD'}</b><br>
@@ -609,7 +566,7 @@ with tab3:
             if st.button(toggle_label, key='rover_toggle', use_container_width=True):
                 st.session_state.rover_active = not st.session_state.rover_active
                 st.session_state.last_cmd = 'START' if st.session_state.rover_active else 'EMERGENCY STOP'
-                cmd_code = 'start' if st.session_state.rover_active else 'stop'
+                cmd_code = 'start' if st.session_state.rover_active else 'emergency_stop'
                 client.send_rover_command(cmd_code) if hardware_connected else None
                 st.session_state.logs.append(f'ROVER {st.session_state.last_cmd}'); st.rerun()
 
@@ -625,6 +582,107 @@ with tab3:
                 st.session_state.last_cmd = 'REVERSE'; st.session_state.rover_active = True
                 client.send_rover_command('reverse') if hardware_connected else None
                 st.session_state.logs.append('ROVER REVERSE'); st.rerun()
+
+    st.markdown('<div class="section">RISK COMPONENTS</div>', unsafe_allow_html=True)
+    st.plotly_chart(go.Figure(go.Bar(x=list(scores.values()), y=list(scores.keys()), orientation='h', text=[f'{v:.0f}' for v in scores.values()], textposition='outside')).update_layout(height=260, margin=dict(l=0, r=40, t=5, b=5), paper_bgcolor='#0b1713', plot_bgcolor='#0b1713', font=dict(color='#dcebe4'), xaxis=dict(range=[0, 110])), use_container_width=True, config={'displayModeBar': False})
+    st.markdown('<div class="panel"><div class="paneltitle">THRESHOLD BREACHES</div>' + (''.join(f'<div class="reading"><b>{b}</b><span class="red">BREACH</span></div>' for b in breaches) if breaches else '<div class="mini">No configured threshold breaches.</div>') + '</div>', unsafe_allow_html=True)
+
+with tab3:
+    st.markdown('<div class="section">PERSONNEL & RESCUE</div>', unsafe_allow_html=True)
+    for row in [trpis[i:i+3] for i in range(0, len(trpis), 3)]:
+        for col, (w, tv, parts) in zip(st.columns(len(row)), row):
+            col.markdown(f'''
+            <div class="worker">
+                <div class="tagline"><b>{w.tag} · {w.name}</b></div>
+                <div class="hr">{w.hr_bpm:.0f} <span style="font-size:9px;color:#769188">BPM</span></div>
+                <div class="mini">SpO₂ {w.spo2_pct:.0f}% · Temp {w.temp_c:.1f}°C · Fall {"YES" if w.fall_detected else "NO"}</div>
+                <div class="bar"><div class="fill" style="width:{min(100, tv)}%"></div></div>
+                <div style="display:flex;justify-content:space-between">
+                    <span class="mini">TRPI</span>
+                    <b class="{"red" if tv >= 80 else "amber" if tv >= 60 else "green"}">{tv:.1f}/100</b>
+                </div>
+            </div>
+            ''', unsafe_allow_html=True)
+
+    st.markdown('<div class="section">COAL MINE MAP</div>', unsafe_allow_html=True)
+    rescue_map_col, sector_details_col = st.columns([1.35, 0.65], gap='medium')
+
+    if score >= 60:
+        haz_status = "DANGEROUS"
+        haz_color = "#ff5c5c"
+    elif score >= 35:
+        haz_status = "CAUTION"
+        haz_color = "#f4b942"
+    else:
+        haz_status = "SAFE"
+        haz_color = "#39d98a"
+
+    if hazard_node == "BASE":
+        base_status = haz_status
+        base_color = haz_color
+        zone_a_status = "SAFE"
+        zone_a_color = "#39d98a"
+    else:
+        base_status = "SAFE"
+        base_color = "#39d98a"
+        zone_a_status = haz_status
+        zone_a_color = haz_color
+
+    with rescue_map_col:
+        tunnel_coords = {"BASE": (1.0, 5.0), "ZONE_A": (8.5, 5.0)}
+        worker_node_positions = [(3.0, 5.0), (6.2, 5.0), (7.5, 5.0)]
+
+        fig_rescue = go.Figure()
+        fig_rescue.add_trace(go.Scatter(x=[tunnel_coords["BASE"][0], tunnel_coords["ZONE_A"][0]], y=[tunnel_coords["BASE"][1], tunnel_coords["ZONE_A"][1]], mode='lines', line=dict(width=28, color='#143026'), hoverinfo='skip', showlegend=False))
+        fig_rescue.add_trace(go.Scatter(x=[tunnel_coords["BASE"][0], tunnel_coords["ZONE_A"][0]], y=[tunnel_coords["BASE"][1], tunnel_coords["ZONE_A"][1]], mode='lines', line=dict(width=1.5, color='#2a6b52', dash='dash'), hoverinfo='skip', showlegend=False))
+        fig_rescue.add_trace(go.Scatter(x=[tunnel_coords["BASE"][0]], y=[tunnel_coords["BASE"][1]], mode='markers+text', text=[f'BASE<br><b>{base_status}</b>'], textposition='bottom center', textfont=dict(size=10, family='IBM Plex Mono', color=base_color), marker=dict(size=22, color=base_color, symbol='square'), name='BASE'))
+        fig_rescue.add_trace(go.Scatter(x=[tunnel_coords["ZONE_A"][0]], y=[tunnel_coords["ZONE_A"][1]], mode='markers+text', text=[f'ZONE A<br><b>{zone_a_status}</b>'], textposition='bottom center', textfont=dict(size=10, family='IBM Plex Mono', color=zone_a_color), marker=dict(size=22, color=zone_a_color, symbol='circle'), name='ZONE A'))
+
+        rover_color = '#39d98a' if st.session_state.rover_active else '#56d6e8'
+        fig_rescue.add_trace(go.Scatter(x=[4.6], y=[5.0], mode='markers+text', text=[f'ROVER M-01<br>({"ACTIVE" if st.session_state.rover_active else "IDLE"})'], textposition='top center', textfont=dict(size=9, family='IBM Plex Mono', color=rover_color), marker=dict(size=18, color=rover_color, symbol='diamond'), name='ROVER M-01'))
+
+        for i, (w, tv, _) in enumerate(trpis[:3]):
+            wx, wy = worker_node_positions[i]
+            w_color = '#ff5c5c' if tv >= 60 else '#f4b942' if tv >= 35 else '#39d98a'
+            fig_rescue.add_trace(go.Scatter(x=[wx], y=[wy], mode='markers+text', text=[f'{w.tag}<br>{w.name}'], textposition='bottom center', textfont=dict(size=8.5, family='IBM Plex Mono', color='#dcebe4'), marker=dict(size=13, color=w_color, symbol='circle'), name=w.tag))
+
+        fig_rescue.update_layout(height=230, margin=dict(l=10, r=10, t=15, b=10), paper_bgcolor='#07100d', plot_bgcolor='#07100d', xaxis=dict(visible=False, range=[0, 9.5]), yaxis=dict(visible=False, range=[3.5, 6.5]), font=dict(color='#dcebe4', family='IBM Plex Mono'), showlegend=False)
+        st.plotly_chart(fig_rescue, use_container_width=True, config={'displayModeBar': False})
+
+    with sector_details_col:
+        base_temp = 24.5 if hazard_node != "BASE" else telemetry.temp
+        base_ch4 = 0.04 if hazard_node != "BASE" else telemetry.ch4
+        base_hum = 52.0 if hazard_node != "BASE" else telemetry.humidity
+        base_vibe = 0.02 if hazard_node != "BASE" else telemetry.strata_vibe_g
+
+        zone_a_temp = telemetry.temp if hazard_node == "ZONE_A" else 26.0
+        zone_a_ch4 = telemetry.ch4 if hazard_node == "ZONE_A" else 0.08
+        zone_a_hum = telemetry.humidity if hazard_node == "ZONE_A" else 58.0
+        zone_a_vibe = telemetry.strata_vibe_g if hazard_node == "ZONE_A" else 0.05
+
+        card_html = (
+            f'<div class="panel" style="margin-top:0px;padding:10px">'
+            f'<div class="paneltitle" style="display:flex;justify-content:space-between"><span>SECTOR TELEMETRY CONDITIONS</span><span class="mini">ACTIVE INJECTION</span></div>'
+            f'<div style="margin-top:8px;padding:6px 8px;background:#06120e;border-radius:6px;border-left:3px solid {base_color}">'
+            f'<div style="display:flex;justify-content:space-between;align-items:center"><b style="font-size:11px;color:#ffffff">BASE (COMMAND SHAFT)</b><span style="font-size:9px;font-weight:700;color:{base_color}">{base_status}</span></div>'
+            f'<div class="mini" style="margin-top:2px;display:grid;grid-template-columns:1fr 1fr;gap:2px">'
+            f'<span>Temp: <b style="color:#ffffff">{base_temp:.1f}°C</b></span>'
+            f'<span>Methane: <b style="color:{"#ff5c5c" if base_ch4 >= 0.75 else "#ffffff"}">{base_ch4:.2f}%</b></span>'
+            f'<span>Humidity: <b style="color:#ffffff">{base_hum:.1f}%</b></span>'
+            f'<span>Vibe: <b style="color:{"#ff5c5c" if base_vibe >= 2.0 else "#ffffff"}">{base_vibe:.2f}g</b></span>'
+            f'</div></div>'
+            f'<div style="margin-top:8px;padding:6px 8px;background:#06120e;border-radius:6px;border-left:3px solid {zone_a_color}">'
+            f'<div style="display:flex;justify-content:space-between;align-items:center"><b style="font-size:11px;color:#ffffff">ZONE A (WORKING FACE)</b><span style="font-size:9px;font-weight:700;color:{zone_a_color}">{zone_a_status}</span></div>'
+            f'<div class="mini" style="margin-top:2px;display:grid;grid-template-columns:1fr 1fr;gap:2px">'
+            f'<span>Temp: <b style="color:{"#ff5c5c" if zone_a_temp >= 33.5 else "#ffffff"}">{zone_a_temp:.1f}°C</b></span>'
+            f'<span>Methane: <b style="color:{"#ff5c5c" if zone_a_ch4 >= 0.75 else "#ffffff"}">{zone_a_ch4:.2f}%</b></span>'
+            f'<span>Humidity: <b style="color:{"#ff5c5c" if zone_a_hum >= 85.0 else "#ffffff"}">{zone_a_hum:.1f}%</b></span>'
+            f'<span>Vibe: <b style="color:{"#ff5c5c" if zone_a_vibe >= 2.0 else "#ffffff"}">{zone_a_vibe:.2f}g</b></span>'
+            f'</div></div>'
+            f'<div class="mini" style="margin-top:6px;color:var(--muted);font-size:9px">Parameters sync with active sensor/scenario stream.</div>'
+            f'</div>'
+        )
+        st.markdown(card_html, unsafe_allow_html=True)
 
     # Checklist Container
     st.markdown('<div class="section">CRITICAL CONDITION MEASURES</div>', unsafe_allow_html=True)
@@ -799,4 +857,4 @@ with tab6:
     )
     st.link_button('OPEN OFFICIAL DGMS CMR 2017 SOURCE', 'https://www.dgms.gov.in/writereaddata/UploadFile/Coal_Mines_Regulation_2017_Noti.pdf', use_container_width=True)
 
-st.markdown(f'<div style="position:fixed;bottom:0;left:0;right:0;background:#050b08;border-top:1px solid #173326;padding:5px 14px;font-size:8px;color:#668278;z-index:999">MINESAFE TITAN V6 · {VERSION} · {state_label} · SEQ {seq} · RESEARCH DECISION-SUPPORT ONLY</div>', unsafe_allow_html=True)
+st.markdown(f'<div style="position:fixed;bottom:0;left:0;right:0;background:#050b08;border-top:1px solid #173326;padding:5px 14px;font-size:8px;color:#668278;z-index:999">MINESAFE TITAN · {VERSION} · {state_label} · SEQ {seq} · RESEARCH DECISION-SUPPORT ONLY</div>', unsafe_allow_html=True)
