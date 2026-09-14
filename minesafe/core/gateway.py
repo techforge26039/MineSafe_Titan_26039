@@ -1,69 +1,50 @@
-"""
-MineSafe Network Gateway Client
--------------------------------
-Polls telemetry and worker states from the ESP32-S3-CAM over HTTP/Wi-Fi.
-"""
 from __future__ import annotations
+from typing import Any, Dict, Optional, Tuple, List
 import requests
-from typing import Any, Dict, List, Optional, Tuple
+from .telemetry import TelemetryData, sanitize_and_validate
+from .config import REQUEST_TIMEOUT
 
-from .telemetry import sanitize_and_validate, TelemetryData
-
-class CommandResult:
-    def __init__(self, ok: bool, message: str):
-        self.ok = ok
+class GatewayStatus:
+    def __init__(self, online: bool, message: str, latency_ms: float = 0.0):
+        self.online = online
         self.message = message
+        self.latency_ms = latency_ms
 
 class GatewayClient:
-    """HTTP client communicating with the ESP32-S3-CAM."""
-    def __init__(self, base_url: str = "http://192.168.137.89", timeout: float = 1.5):
-        # Normalize base URL (strip trailing slashes)
+    def __init__(self, base_url: str):
         self.base_url = base_url.rstrip("/")
-        self.timeout = timeout
-        self.online = False
-        self.message = "Gateway disconnected"
 
-    def get_telemetry(self, sequence: int = 0) -> Tuple[Optional[TelemetryData], GatewayClient]:
-        endpoint = f"{self.base_url}/api/telemetry"
+    def get_telemetry(self, sequence: int) -> Tuple[Optional[TelemetryData], GatewayStatus]:
+        url = f"{self.base_url}/api/telemetry"
         try:
-            resp = requests.get(endpoint, timeout=self.timeout)
-            if resp.status_code == 200:
-                payload = resp.json()
-                if isinstance(payload, dict):
-                    self.online = True
-                    self.message = "ESP32-S3 Gateway Online"
-                    # Pass through canonical validation pipeline
-                    telemetry = sanitize_and_validate(payload, sequence, "LIVE · ESP32-S3")
-                    return telemetry, self
-            
-            self.online = False
-            self.message = f"HTTP Error {resp.status_code}"
-            return None, self
-
-        except Exception as exc:
-            self.online = False
-            self.message = f"FAIL-SAFE · {type(exc).__name__}"
-            return None, self
-
-    def get_workers(self) -> Tuple[Optional[List[Dict[str, Any]]], GatewayClient]:
-        endpoint = f"{self.base_url}/api/workers"
-        try:
-            resp = requests.get(endpoint, timeout=self.timeout)
+            resp = requests.get(url, timeout=REQUEST_TIMEOUT)
             if resp.status_code == 200:
                 data = resp.json()
-                workers = data if isinstance(data, list) else data.get("workers", [])
-                return workers, self
-            return None, self
-        except Exception:
-            return None, self
+                telemetry = sanitize_and_validate(data, sequence, source="LIVE_GATEWAY")
+                status = GatewayStatus(online=True, message="OPERATIONAL", latency_ms=resp.elapsed.total_seconds() * 1000.0)
+                return telemetry, status
+            return None, GatewayStatus(online=False, message=f"HTTP {resp.status_code}")
+        except requests.exceptions.Timeout:
+            return None, GatewayStatus(online=False, message="TIMEOUT")
+        except requests.exceptions.ConnectionError:
+            return None, GatewayStatus(online=False, message="CONNECTION_REFUSED")
+        except Exception as e:
+            return None, GatewayStatus(online=False, message=str(e)[:24])
 
-    def send_rover_command(self, cmd: str) -> CommandResult:
-        endpoint = f"{self.base_url}/api/command"
+    def send_rover_command(self, cmd: str) -> bool:
+        url = f"{self.base_url}/api/command"
         try:
-            resp = requests.post(endpoint, json={"command": cmd}, timeout=self.timeout)
+            resp = requests.post(url, json={"command": cmd}, timeout=1.0)
+            return resp.status_code == 200
+        except Exception:
+            return False
+
+    def get_workers(self) -> Tuple[Optional[List[Dict[str, Any]]], GatewayStatus]:
+        url = f"{self.base_url}/api/workers"
+        try:
+            resp = requests.get(url, timeout=REQUEST_TIMEOUT)
             if resp.status_code == 200:
-                ack = resp.json().get("ack", "OK")
-                return CommandResult(True, f"ACK: {ack}")
-            return CommandResult(False, f"HTTP {resp.status_code}")
-        except Exception as exc:
-            return CommandResult(False, f"Network Error: {type(exc).__name__}")
+                return resp.json(), GatewayStatus(online=True, message="OK")
+            return None, GatewayStatus(online=False, message=f"HTTP {resp.status_code}")
+        except Exception:
+            return None, GatewayStatus(online=False, message="OFFLINE")
