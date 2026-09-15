@@ -29,7 +29,71 @@ st.markdown("""
 @import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500;600;700&display=swap');
 :root{--bg:#07100d;--panel:#0b1713;--line:#1d3a2e;--muted:#769188;--text:#e9f2ed;--green:#39d98a;--amber:#f4b942;--red:#ff5c5c;--cyan:#56d6e8}
 html,body,[class*="css"]{font-family:'IBM Plex Mono',monospace}.stApp{background:radial-gradient(circle at 85% 5%,#10291e 0,#07100d 32%,#050a08 75%);color:var(--text)}
-.block-container{padding:1rem 1.2rem 4rem;max-width:1600px}[data-testid="stHeader"],#MainMenu,footer{visibility:hidden;height:0}
+
+/* 1. HIDE DEPLOY BUTTON & STREAMLIT MENU STRICTLY */
+.stDeployButton,
+.stAppDeployButton,
+div[data-testid="stAppDeployButton"],
+#MainMenu,
+footer,
+div[data-testid="stDecoration"] {
+    display: none !important;
+    visibility: hidden !important;
+    height: 0 !important;
+    width: 0 !important;
+}
+
+/* 2. CONTAINER SPACING */
+.block-container {
+    padding: 1.5rem 1.2rem 5rem;
+    max-width: 1600px;
+}
+
+/* 3. TRANSPARENT HEADER */
+header[data-testid="stHeader"] {
+    background: transparent !important;
+}
+
+/* 4. FORCE SIDEBAR TOGGLE ARROW VISIBILITY & CLICKABILITY */
+div[data-testid="stSidebarCollapsedControl"],
+div[data-testid="stSidebarCollapseButton"],
+button[data-testid="stSidebarCollapseButton"],
+button[data-testid="baseButton-header"] {
+    display: flex !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    color: var(--text) !important;
+    z-index: 1000000 !important;
+}
+
+div[data-testid="stSidebarCollapsedControl"] svg,
+button[data-testid="stSidebarCollapseButton"] svg {
+    fill: var(--text) !important;
+    stroke: var(--text) !important;
+}
+
+/* 5. FULL-LENGTH PERSISTENT FOOTER BAR */
+.full-footer-bar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    width: 100%;
+    height: 28px;
+    line-height: 28px;
+    background: #050b08;
+    border-top: 1px solid #173326;
+    padding: 0 16px;
+    font-size: 10.5px;
+    font-family: 'IBM Plex Mono', monospace;
+    color: #769188;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    box-sizing: border-box;
+    z-index: 999999;
+}
+
 section[data-testid="stSidebar"]{background:#06100c;border-right:1px solid #173326}.brand{border-bottom:1px solid var(--line);padding-bottom:12px;margin-bottom:12px}.brand h1{font-family:'Barlow Condensed';font-size:30px;margin:0}.brand small{font-size:9px;color:var(--muted);letter-spacing:1.5px}
 .topline{display:flex;gap:10px;align-items:center;margin-bottom:10px}.eyebrow,.source{font-size:10px;color:var(--muted);letter-spacing:1px}.mini{font-size:10px;color:var(--muted);letter-spacing:0.8px}
 
@@ -168,17 +232,17 @@ for i in range(1, 10):
 with st.sidebar:
     st.markdown('<div class="brand"><h1>MINESAFE TITAN MODE</h1><small>SIH 2026 - PS 26039</small></div>', unsafe_allow_html=True)
     
-    source = st.radio('Telemetry', ['LIVE ESP32 GATEWAY', 'SIMULATION LAB'], index=1, label_visibility='collapsed')
+    source = st.radio('Telemetry', ['LIVE ESP GATEWAY', 'SIMULATION LAB'], index=1, label_visibility='collapsed')
     is_live = source.startswith('LIVE')
 
-    st.markdown(f'<div class="{"sidebar-active-title" if is_live else "sidebar-inactive-title"}">LIVE ESP32 GATEWAY CONFIG</div>', unsafe_allow_html=True)
+    st.markdown(f'<div class="{"sidebar-active-title" if is_live else "sidebar-inactive-title"}">LIVE ESP GATEWAY CONFIG</div>', unsafe_allow_html=True)
     gw_css = "active-ctrl" if is_live else "inactive-ctrl"
     st.markdown(f'<div class="{gw_css}">', unsafe_allow_html=True)
     gateway_url = st.text_input('Gateway URL', DEFAULT_GATEWAY, disabled=not is_live)
     st.markdown('</div>', unsafe_allow_html=True)
 
     sim_css = "active-ctrl" if not is_live else "inactive-ctrl"
-    st.markdown(f'<div class="{"sidebar-active-title" if not is_live else "sidebar-inactive-title"}">SIMULATION LAB // INCIDENT INJECTION</div>', unsafe_allow_html=True)
+    st.markdown(f'<div class="{"sidebar-active-title" if not is_live else "sidebar-inactive-title"}">SIMULATION LAB - INCIDENT INJECTION</div>', unsafe_allow_html=True)
     st.markdown(f'<div class="{sim_css}">', unsafe_allow_html=True)
     
     scenario = st.selectbox(
@@ -203,8 +267,8 @@ with st.sidebar:
     st.markdown('</div>', unsafe_allow_html=True)
 
     st.divider()
-    st.markdown('**WORKER TELEMETRY**')
-    worker_mode = st.radio('Worker channel', ['SIMULATED WEARABLES', 'LIVE /api/workers'], label_visibility='collapsed')
+    st.markdown('**WORKER TELEMETRY MODE**')
+    worker_mode = st.radio('Worker channel', ['SIMULATED WEARABLES', 'LIVE WEARABLES'], label_visibility='collapsed')
     st.divider()
     st.markdown('**VISION / YOLOv8**')
     vision_source = st.radio('Vision input', ['DISABLED', 'IMAGE UPLOAD', 'CAMERA SNAPSHOT'], label_visibility='collapsed')
@@ -354,23 +418,23 @@ for col, (a, b, d, meta_text) in zip(k, kpis):
 curr_dt = datetime.now()
 curr_pressure = round(101.3 + (telemetry.temp - 25.0) * 0.08 - (telemetry.humidity - 50.0) * 0.03, 1) if telemetry.is_valid else 101.3
 
-# Tabs - Tab 6 renamed to STATUTORY METHODS
+# Tabs
 tab2, tab3, tab4, tab5, tab6 = st.tabs(['◉ ENVIRONMENT', '♙ PERSONNEL & RESCUE', '◈ AI / VISION', '▣ AUDIT & STANDARDS', '📜 STATUTORY METHODS'])
 
 with tab2:
     st.markdown('<div class="section">ENVIRONMENTAL MONITORING</div>', unsafe_allow_html=True)
     
     sensors_row1 = [
-        ('TEMPERATURE', telemetry.temp, '°C', telemetry.temp >= 33.5, 'ceiling 33.5 °C'),
-        ('CO', telemetry.co, 'PPM', telemetry.co >= 50.0, 'ceiling 50 PPM'),
-        ('METHANE', telemetry.ch4, '%', telemetry.ch4 >= 0.75, 'ceiling 0.75 %'),
-        ('VIBRATIONS', telemetry.strata_vibe_g, 'g', telemetry.strata_vibe_g >= 2.0, 'ceiling 2.0 g'),
+        ('TEMPERATURE', telemetry.temp, '°C', telemetry.temp >= 33.5, 'max 33.5 °C'),
+        ('CO', telemetry.co, 'PPM', telemetry.co >= 50.0, 'max 50 PPM'),
+        ('METHANE', telemetry.ch4, '%', telemetry.ch4 >= 0.75, 'max 0.75 %'),
+        ('VIBRATIONS', telemetry.strata_vibe_g, 'g', telemetry.strata_vibe_g >= 2.0, 'max 2.0 g'),
     ]
     sensors_row2 = [
-        ('OXYGEN (O₂)', telemetry.o2, '%', telemetry.o2 < 19.0, 'min 19.0 % statutory'),
-        ('CARBON DIOXIDE', telemetry.co2, 'PPM', telemetry.co2 >= 5000.0, 'ceiling 5000 PPM'),
-        ('WATER DEPTH', telemetry.water_level_cm, 'cm', telemetry.water_level_cm >= 15.0, 'ceiling 15.0 cm'),
-        ('HUMIDITY', telemetry.humidity, '%', telemetry.humidity >= 85.0, 'ceiling 85 %'),
+        ('OXYGEN (O₂)', telemetry.o2, '%', telemetry.o2 < 19.0, 'min 19.0 %'),
+        ('CARBON DIOXIDE', telemetry.co2, 'PPM', telemetry.co2 >= 5000.0, 'max 5000 PPM'),
+        ('WATER DEPTH', telemetry.water_level_cm, 'cm', telemetry.water_level_cm >= 15.0, 'max 15.0 cm'),
+        ('HUMIDITY', telemetry.humidity, '%', telemetry.humidity >= 85.0, 'max 85 %'),
     ]
     
     for sensor_group in [sensors_row1, sensors_row2]:
@@ -598,14 +662,12 @@ with tab3:
     with rescue_map_col:
         fig_rescue = go.Figure()
 
-        # Centerline Navigation Path
         fig_rescue.add_trace(go.Scatter(
             x=[0.3, 9.4], y=[5.0, 5.0],
             mode='lines', line=dict(width=2, color='#2a6b52', dash='dot'),
             hoverinfo='skip', showlegend=False
         ))
 
-        # Irregular Jagged Rock Walls
         x_wall = np.linspace(0.8, 9.4, 45)
         np.random.seed(42)
         y_top = 5.65 + np.sin(x_wall * 2.8) * 0.12 + np.random.normal(0, 0.03, len(x_wall))
@@ -617,7 +679,6 @@ with tab3:
             line=dict(color='#183d2c', width=2), hoverinfo='skip', showlegend=False
         ))
 
-        # BASE BOX: Offset to upper flank
         fig_rescue.add_trace(go.Scatter(
             x=[0.1, 0.7, 0.7, 0.1, 0.1], y=[5.2, 5.2, 6.0, 6.0, 5.2],
             mode='lines', fill='toself', fillcolor='rgba(6, 18, 14, 0.9)',
@@ -629,7 +690,6 @@ with tab3:
             showlegend=False
         ))
 
-        # ZONE A BOX: Boundary shares right edge at x=4.8
         fig_rescue.add_trace(go.Scatter(
             x=[0.8, 4.8, 4.8, 0.8, 0.8], y=[4.1, 4.1, 5.9, 5.9, 4.1],
             mode='lines', fill='toself', fillcolor='rgba(0,0,0,0)',
@@ -643,7 +703,6 @@ with tab3:
             showlegend=False
         ))
 
-        # ZONE B BOX: Attached boundary shares left edge at x=4.8
         fig_rescue.add_trace(go.Scatter(
             x=[4.8, 9.4, 9.4, 4.8, 4.8], y=[4.1, 4.1, 5.9, 5.9, 4.1],
             mode='lines', fill='toself', fillcolor='rgba(0,0,0,0)',
@@ -657,7 +716,6 @@ with tab3:
             showlegend=False
         ))
 
-        # ROVER M-01 inside Zone A
         rover_color = '#39d98a' if st.session_state.rover_active else '#56d6e8'
         fig_rescue.add_trace(go.Scatter(
             x=[3.8], y=[5.0], mode='markers+text',
@@ -666,7 +724,6 @@ with tab3:
             marker=dict(size=19, color=rover_color, symbol='diamond'), name='ROVER M-01'
         ))
 
-        # Worker Markers
         worker_node_positions = [(2.0, 5.0), (6.2, 5.0), (8.0, 5.0)]
         for i, (w, tv, _) in enumerate(trpis[:3]):
             wx, wy = worker_node_positions[i]
@@ -888,7 +945,7 @@ with tab4:
         st.plotly_chart(fig_ghm, use_container_width=True, config={'displayModeBar': False})
 
 # ==============================================================================
-# TAB 5: AUDIT & STANDARDS (TABLE MOVED HERE)
+# TAB 5: AUDIT & STANDARDS
 # ==============================================================================
 with tab5:
     top_aud_col1, top_aud_col2 = st.columns([1.2, 0.8])
@@ -917,8 +974,6 @@ with tab5:
         )
 
     st.markdown('<div class="section" style="margin-top:16px">ROUTE CANDIDATES</div>', unsafe_allow_html=True)
-    
-    # Strictly 2 Zones (ZONE A & ZONE B)
     rc_data = [
         {"rank": 1, "path": "BASE → ZONE_A → ZONE_B", "distance_m": 65, "hazard_penalty": 0, "total_cost": 65},
         {"rank": 2, "path": "BASE → SHAFT_NORTH → ZONE_B", "distance_m": 75, "hazard_penalty": 0, "total_cost": 75},
@@ -937,21 +992,19 @@ with tab5:
     </div>
     ''', unsafe_allow_html=True)
 
-    # Statutory Reference Table moved directly here with suitable heading
     st.markdown('<div class="section" style="margin-top:20px">STATUTORY COMPLIANCE & REFERENCE STANDARDS</div>', unsafe_allow_html=True)
     st.dataframe(pd.DataFrame(reference_rows()), use_container_width=True, hide_index=True)
     st.markdown('<div class="mini" style="color:var(--muted);margin-top:6px;margin-bottom:18px">Reference source: Directorate General of Mines Safety (DGMS), Coal Mines Regulations, 2017. Verify the current applicable rules, mine category, approved ventilation scheme and site procedures before any operational use.</div>', unsafe_allow_html=True)
 
 # ==============================================================================
-# TAB 6: STATUTORY METHODS (RENAMED & UPDATED)
+# TAB 6: STATUTORY METHODS
 # ==============================================================================
 with tab6:
     st.markdown('<div class="section">STATUTORY STANDARDS & DECISION METHODOLOGY DGMS-REFERENCED BASELINE</div>', unsafe_allow_html=True)
 
-    # All 8 Parameters detailed under CMR 2017 baseline
     st.markdown('''
     <div class="panel" style="margin-bottom:12px">
-        <div class="paneltitle" style="margin-bottom:8px">1. STATUTORY / REFERENCE BASELINE — COAL MINES REGULATIONS, 2017</div>
+        <div class="paneltitle" style="margin-bottom:8px">STATUTORY / REFERENCE BASELINE — COAL MINES REGULATIONS, 2017</div>
         <div class="mini" style="line-height:1.9">
             • <b>Oxygen (O₂):</b> minimum 19.0% by volume at places where persons are required to work or pass.<br>
             • <b>Carbon Monoxide (CO):</b> MineSafe uses 50 ppm as a configured operational alert threshold; it is not labelled as a universal CMR statutory ceiling.<br>
@@ -981,7 +1034,6 @@ with tab6:
         vo2_rate = st.number_input("Assumed O₂ consumption (L/min/worker)", min_value=0.10, max_value=5.0, value=0.25, step=0.05, label_visibility="collapsed")
 
     with o2_right_col:
-        # Native Streamlit LaTeX rendering
         st.markdown('<div style="background:#06120e;border:1px solid #163829;border-radius:6px;padding:8px;margin-bottom:12px">', unsafe_allow_html=True)
         st.latex(r"\Delta t = \frac{V_{\text{chamber}} \times (O_2\% - 19.0\%)}{N_{\text{workers}} \times \dot{V}_{O_2}}")
         st.markdown('</div>', unsafe_allow_html=True)
@@ -1004,7 +1056,7 @@ with tab6:
     </div>
     ''', unsafe_allow_html=True)
 
-    st.markdown('<div class="section">SYSTEM-WIDE TELEMETRY & DISPATCH CONSOLE TRACEABLE EVENT STREAM</div>', unsafe_allow_html=True)
+    st.markdown('<div class="section">LIVE SYSTEM ACTIVITY TIMELINE</div>', unsafe_allow_html=True)
     t_now_str = datetime.now().strftime("%H:%M:%S")
     default_events = [
         f"[{t_now_str}] SYS_AUTH: Command node {NODE_ID} active",
@@ -1037,4 +1089,15 @@ with tab6:
     ]
     st.dataframe(pd.DataFrame(pipeline_rows), use_container_width=True, hide_index=True)
 
-st.markdown(f'<div style="position:fixed;bottom:0;left:0;right:0;background:#050b08;border-top:1px solid #173326;padding:5px 14px;font-size:8px;color:#668278;z-index:999">MINESAFE TITAN · {VERSION} · {state_label} · SEQ {seq} · RESEARCH DECISION-SUPPORT ONLY</div>', unsafe_allow_html=True)
+# FULL LENGTH RELIABLE FOOTER BAR
+st.markdown(
+    f'''<div class="full-footer-bar">
+        <span>
+            <strong style="color:#e9f2ed">MINESAFE TITAN</strong> by <strong style="color:#39d98a">TECH FORGE</strong> · SIH '26 [PS 26039]
+        </span>
+        <span>
+            <span style="color:{"#39d98a" if hardware_connected else "#56d6e8"}">● {state_label}</span> · v{VERSION} · SEQ {seq:06d}
+        </span>
+    </div>''',
+    unsafe_allow_html=True
+)

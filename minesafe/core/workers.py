@@ -22,7 +22,7 @@ class Worker:
 
 def demo_workers() -> List[Worker]:
     return [
-        Worker("TAG-108", "Worker A", "ZONE_C", 132, 93, 38.1, False),
-        Worker("TAG-114", "Worker B", "ZONE_C", 118, 95, 37.4, False),
-        Worker("TAG-121", "Worker C", "D", 88, 97, 36.8, False),
+        Worker("TAG-108", "Worker A", "ZONE_A", 128, 94, 37.8, False),
+        Worker("TAG-114", "Worker B", "ZONE_B", 118, 95, 37.4, False),
+        Worker("TAG-121", "Worker C", "ZONE_B", 88, 97, 36.8, False),
     ]
