@@ -54,7 +54,8 @@ Frontend / Command Center: Python 3.12+, Streamlit, Plotly, HTML5/CSS3.
 Machine Learning & Vision: PyTorch, Ultralytics YOLOv8, ByteTrack, Scikit-Learn, NumPy, Pandas, PIL.
 Protocols & API: HTTP RESTful APIs, JSON, MJPEG Video Streaming.
 
-📂 4. Repository File StructureThe project is structured modularly under the minesafe/ package to ensure clean separation between UI components, core algorithms, hardware adapters, and AI models.   PlaintextMineSafe_Titan_26039/
+📂 4. Repository File StructureThe project is structured modularly under the minesafe/ package to ensure clean separation between UI components, core algorithms, hardware adapters, and AI models.
+MineSafe_Titan_26039/
 │
 ├── minesafe/                          <-- Main Application Package
 │   ├── __init__.py
@@ -89,7 +90,7 @@ Protocols & API: HTTP RESTful APIs, JSON, MJPEG Video Streaming.
 ├── requirements.txt                   <-- Python package dependencies
 └── .gitignore                         <-- Git exclusion rules
 
-🔌 5. Live ESP32 Hardware API ContractWhen connected to an active ESP32 rover node (LIVE ESP GATEWAY mode), the system communicates over these REST endpoints:   GET /data: Fetches real-time sensor JSON (temperature, humidity, mq2, mq9, mq135, vibration, waterValue).   GET /capture: Serves a JPEG camera frame snapshot from the ESP32-S3-CAM.   POST /api/command: Dispatches motor actions ({"command": "forward" | "reverse" | "left" | "right" | "start" | "emergency_stop"}).
+🔌 5. Live ESP32 Hardware API ContractWhen connected to an active ESP32 rover node (LIVE ESP GATEWAY mode), the system communicates over these REST endpoints:   GET /data: Fetches real-time sensor JSON (temperature, humidity, mq2, mq9, mq135, vibration, waterValue).   GET /live stream: Serves a camera frame live stream from the ESP32-S3-CAM.   POST /api/command: Dispatches motor actions ({"command": "forward" | "reverse" | "left" | "right" | "start" | "emergency_stop"}).
 
 ⚡ 6. Quickstart & Installation
 Prerequisites Python 3.10+ installed on your computer.
