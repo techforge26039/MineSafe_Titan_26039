@@ -10,7 +10,7 @@
 Underground mines present severe environmental hazards including explosive methane ($\text{CH}_4$), oxygen ($\text{O}_2$) deficiency, toxic carbon monoxide ($\text{CO}$) poisoning, roof collapses, and water sump flooding. **MineSafe Titan** bridges the gap between field sensors and emergency control centers by providing:
 
 1. **Multi-Sensor Telemetry Validation:** Real-time ingestion of atmospheric, thermal, and seismic data from custom ESP32 hardware nodes over HTTP/REST APIs.
-2. **Explainable Hazard Fusion Engine:** Mathematical calculation of a single, transparent $0\text{--}100$ Mine Hazard Score combining atmospheric, geotechnical, and thermal risk factors[cite: 18].
+2. **Explainable Hazard Fusion Engine:** Mathematical calculation of a single, transparent $0\text{--}100$ Mine Hazard Score combining atmospheric, geotechnical, and thermal risk factors.
 3. **Worker Triage Risk Index (TRPI):** Dynamic $0\text{--}100$ health scoring for miners fusing biometric wearable telemetry (Heart Rate, $\text{SpO}_2$, Body Temp) with toxic gas exposure and fall detection[cite: 17, 18].
 4. **Multimodal Computer Vision (YOLOv8 + ByteTrack):** Object detection and persistent tracking for PPE compliance (`no_helmet`, `no_vest`), worker fall evidence (`fallen_person`), structural hazards, and subterranean smoke/fire[cite: 22].
 5. **Statutory Compliance Audit:** Built-in verification against Directorate General of Mines Safety (DGMS) Coal Mines Regulations (CMR 2017) with one-click forensic JSON audit logging[cite: 19, 23].
@@ -93,7 +93,7 @@ Protocols & API: HTTP RESTful APIs, JSON, MJPEG Video Streaming.
 
 ⚡ 6. Quickstart & Installation
 Prerequisites Python 3.10+ installed on your computer.
-ESP32-S3 board connected to the same Wi-Fi / Hotspot network as your laptop[cite: 17].
+ESP32-S3 board connected to the same Wi-Fi / Hotspot network as your laptop.
 1. Clone RepositoryBash git clone https://github.com/techforge26039/MineSafe_Titan_26039.git
 2. Launch Dashboard (1-Click)Windows:
 Double-click start.bat or run in PowerShell:  PowerShell.\start.bat
