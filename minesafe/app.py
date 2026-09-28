@@ -1,7 +1,6 @@
 from __future__ import annotations
-import json, math, time
+import json, math
 from datetime import datetime, timezone, timedelta
-from pathlib import Path
 
 import numpy as np
 import pandas as pd
@@ -537,16 +536,16 @@ with tab2:
             ''', unsafe_allow_html=True)
         else:
             if hardware_connected:
-                stream_target = f"{gateway_url}/stream"
+                stream_target = "http://10.143.43.237:81/stream"
                 st.markdown(f'''
                 <div style="height:280px;background:#000;display:flex;justify-content:center;align-items:center;overflow:hidden;position:relative;">
-                    <img src="{stream_target}" style="width:100%;height:100%;object-fit:cover;" onerror="this.onerror=null;this.src='{gateway_url}:81/stream';"/>
+                    <img src="{stream_target}" style="width:100%;height:100%;object-fit:cover;"/>
                     <div class="cam-crosshair"></div>
                     <div class="cam-watermark">LIVE HARDWARE STREAM (ESP32-S3-CAM)</div>
                 </div>
                 <div class="cam-footer">
                     <span>ESP32-S3-CAM · {gateway_url}</span>
-                    <span>HARDWARE STREAM · FPS: ~30 · RESOLUTION: VGA MJPEG</span>
+                    <span>MJPEG STREAM · RESOLUTION: VGA 640x480</span>
                 </div>
                 ''', unsafe_allow_html=True)
             else:
