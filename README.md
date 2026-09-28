@@ -1,4 +1,4 @@
-# ⛏️ MINESAFE TITAN — SIH 2026 FINAL PROTOTYPE
+## ⛏️ MINESAFE TITAN — SIH 2026 FINAL PROTOTYPE
 > **Official Submission for Smart India Hackathon (SIH) 2026 — Problem Statement 26039**  
 > *Real-Time AI & IoT Underground Mine Safety Platform — Multi-Hazard Detection, Worker Biometrics Tracking, YOLOv8 Vision & Autonomous Teleoperation.*
 
@@ -7,7 +7,7 @@
 ## 📌 1. Project Overview & Core Concept
 **MineSafe Titan** is an integrated IoT hardware and AI/ML decision-support system engineered to prevent and mitigate underground coal mining disasters. 
 
-Underground mines present severe environmental hazards including explosive methane ($\text{CH}_4$) ingress[cite: 16, 18], oxygen ($\text{O}_2$) deficiency[cite: 16, 18], toxic carbon monoxide ($\text{CO}$) poisoning[cite: 16, 18], roof collapses[cite: 16, 18], and water sump flooding[cite: 16, 18]. **MineSafe Titan** bridges the gap between field sensors and emergency control centers by providing:
+Underground mines present severe environmental hazards including explosive methane ($\text{CH}_4$), oxygen ($\text{O}_2$) deficiency, toxic carbon monoxide ($\text{CO}$) poisoning, roof collapses, and water sump flooding. **MineSafe Titan** bridges the gap between field sensors and emergency control centers by providing:
 
 1. **Multi-Sensor Telemetry Validation:** Real-time ingestion of atmospheric, thermal, and seismic data from custom ESP32 hardware nodes over HTTP/REST APIs.
 2. **Explainable Hazard Fusion Engine:** Mathematical calculation of a single, transparent $0\text{--}100$ Mine Hazard Score combining atmospheric, geotechnical, and thermal risk factors[cite: 18].
@@ -21,7 +21,7 @@ Underground mines present severe environmental hazards including explosive metha
 
 ```text
        ┌────────────────────────┐      ┌─────────────────────────┐
-       │   ESP32 Rover Gateway   │      │   Worker Wearable Nodes │
+       │   ESP32 Rover Gateway  │      │   Worker Wearable Nodes │
        │  (Atmospheric Sensors) │      │  (HR, SpO₂, Fall Sensor)│
        └───────────┬────────────┘      └────────────┬────────────┘
                    │ GET /data                      │ GET /workers
@@ -29,7 +29,7 @@ Underground mines present severe environmental hazards including explosive metha
                                       │
                                       ▼
        ┌─────────────────────────────────────────────────────────┐
-       │              Multimodal AI & Hazard Fusion               │
+       │              Multimodal AI & Hazard Fusion              │
        │  ┌───────────────────────┬───────────────────────────┐  │
        │  │ Hazard Engine (0-100) │ TinyMLP Sensor Anomaly AI │  │
        │  ├───────────────────────┼───────────────────────────┤  │
@@ -48,7 +48,11 @@ Underground mines present severe environmental hazards including explosive metha
        │  │ Emergency Protocols   │ Statutory Standards & Audit│ │
        │  └───────────────────────┴───────────────────────────┘  │
        └─────────────────────────────────────────────────────────┘
-🛠️ 3. Hardware & Software Tech StackHardware Nodes: ESP32-S3, ESP32-S3-CAM, DHT11 (Temp/Humidity), MQ-2 (Combustible Gas/Methane), MQ-9 (Carbon Monoxide), MQ-135 (Air Quality/$\text{CO}_2$), SW-420 (Vibration Sensor), Water Level Sensor.   Frontend / Command Center: Python 3.12+, Streamlit, Plotly, HTML5/CSS3.   Machine Learning & Vision: PyTorch, Ultralytics YOLOv8, ByteTrack, Scikit-Learn, NumPy, Pandas, PIL.   Protocols & API: HTTP RESTful APIs, JSON, MJPEG Video Streaming.
+🛠️ 3. Hardware & Software Tech Stack
+Hardware Nodes: ESP32-S3, ESP32-S3-CAM, DHT11 (Temp/Humidity), MQ-2 (Combustible Gas/Methane), MQ-9 (Carbon Monoxide), MQ-135 (Air Quality/$\text{CO}_2$), SW-420 (Vibration Sensor), Water Level Sensor.
+Frontend / Command Center: Python 3.12+, Streamlit, Plotly, HTML5/CSS3.
+Machine Learning & Vision: PyTorch, Ultralytics YOLOv8, ByteTrack, Scikit-Learn, NumPy, Pandas, PIL.
+Protocols & API: HTTP RESTful APIs, JSON, MJPEG Video Streaming.
 
 📂 4. Repository File StructureThe project is structured modularly under the minesafe/ package to ensure clean separation between UI components, core algorithms, hardware adapters, and AI models.   PlaintextMineSafe_Titan_26039/
 │
@@ -84,9 +88,19 @@ Underground mines present severe environmental hazards including explosive metha
 ├── start.sh                           <-- Linux/macOS 1-click launcher
 ├── requirements.txt                   <-- Python package dependencies
 └── .gitignore                         <-- Git exclusion rules
-🔌 5. Live ESP32 Hardware API ContractWhen connected to an active ESP32 rover node (LIVE ESP GATEWAY mode), the system communicates over these REST endpoints:   GET /data: Fetches real-time sensor JSON (temperature, humidity, mq2, mq9, mq135, vibration, waterValue).   GET /capture: Serves a JPEG camera frame snapshot from the ESP32-S3-CAM.   POST /api/command: Dispatches motor actions ({"command": "forward" | "reverse" | "left" | "right" | "start" | "emergency_stop"}).   ⚡ 6. Quickstart & InstallationPrerequisitesPython 3.10+ installed on your computer.   ESP32-S3 board connected to the same Wi-Fi / Hotspot network as your laptop[cite: 17].1. Clone RepositoryBashgit clone [https://github.com/YOUR_USERNAME/MineSafe_Titan_26039.git](https://github.com/YOUR_USERNAME/MineSafe_Titan_26039.git)
-cd MineSafe_Titan_26039
-2. Launch Dashboard (1-Click)Windows: Double-click start.bat or run in PowerShell:   PowerShell.\start.bat
+
+🔌 5. Live ESP32 Hardware API ContractWhen connected to an active ESP32 rover node (LIVE ESP GATEWAY mode), the system communicates over these REST endpoints:   GET /data: Fetches real-time sensor JSON (temperature, humidity, mq2, mq9, mq135, vibration, waterValue).   GET /capture: Serves a JPEG camera frame snapshot from the ESP32-S3-CAM.   POST /api/command: Dispatches motor actions ({"command": "forward" | "reverse" | "left" | "right" | "start" | "emergency_stop"}).
+
+⚡ 6. Quickstart & Installation
+Prerequisites Python 3.10+ installed on your computer.
+ESP32-S3 board connected to the same Wi-Fi / Hotspot network as your laptop[cite: 17].
+1. Clone RepositoryBash git clone https://github.com/techforge26039/MineSafe_Titan_26039.git
+2. Launch Dashboard (1-Click)Windows:
+Double-click start.bat or run in PowerShell:  PowerShell.\start.bat
 Linux / macOS: Run in terminal:   Bashchmod +x start.sh
 ./start.sh
-📜 7. Statutory References & DisclaimerRegulatory Baseline: Threshold references used in this project are derived from the Directorate General of Mines Safety (DGMS), Coal Mines Regulations, 2017 (Regulation 53).   Disclaimer: MineSafe Titan is an internal-round hackathon research prototype designed for decision-support. It is not certified mine-control equipment and should not replace statutory emergency procedures or certified mine instrumentation. 
+
+
+📜 7. Statutory References & Disclaimer
+Regulatory Baseline: Threshold references used in this project are derived from the Directorate General of Mines Safety (DGMS), Coal Mines Regulations, 2017 (Regulation 53).
+Disclaimer: MineSafe Titan is a Smart India Hackathon research prototype designed for decision-support. It is not certified mine-control equipment and should not replace statutory emergency procedures or certified mine instrumentation. 
